@@ -53,8 +53,8 @@ function params = params()
     % params.gamma_values = -0.5:0.1:0.5;
     params.gamma_values = linspace(-0.5, 0.5, 11);
     
-    params.noise_power_values = logspace(-5, -9, 11);
-    params.model_error_values = linspace(0.9, 1.1, 11);
+    params.noise_power_values = logspace(log10(1e-9) - 2, log10(1e-9) + 2, 101);
+    params.model_error_values = linspace(0.9, 1.1, 101);
 
     % Simulation Time
     params.sim_time = 610;

@@ -5,7 +5,7 @@ addpath('plots');
 % Load simulation parameters
 params = params();
 num_gamma = length(params.gamma_values);
-noise_powers = logspace(log10(1e-9) - 1, log10(1e-9) + 1, 25);
+noise_powers = params.noise_power_values;
 num_noise = length(noise_powers);
 
 % === Train PASAD using gamma_ref_value = 0 ===
@@ -25,7 +25,7 @@ results_struct = struct();
 
 for j = 1:num_noise
     params.noise_power = noise_powers(j);
-    noise_key = sprintf('noise_%.0e', params.noise_power);  % Struct field name
+    noise_key = matlab.lang.makeValidName(sprintf('noise_%.0e', params.noise_power));
 
     local_results(num_gamma) = struct(...
         'gamma', [], ...
@@ -60,17 +60,16 @@ for j = 1:num_noise
 end
 
 % Save results if needed
-% save('results_noise.mat', 'results_struct');
-
-%% Detection threshold optimization
-epsilon = 1e-9;
-optimal_thresholds.pasad = calc_threshold(results, 'pasad', epsilon);
-optimal_thresholds.cusum_pos = calc_threshold(results, 'cusum_pos', epsilon);
-optimal_thresholds.cusum_neg = calc_threshold(results, 'cusum_neg', epsilon);
-optimal_thresholds_cusum = [optimal_thresholds.cusum_pos optimal_thresholds.cusum_neg];
-% === Performance evaluation ===
-conf_matrix_pasad = compute_metrics(results, optimal_thresholds.pasad, 'pasad');
-conf_matrix_cusum = compute_metrics(results, optimal_thresholds_cusum, 'cusum');
+save('results_noise.mat', 'results_struct');
 
 %% Visualization
-% plot_gamma_and_error_results_2d(results, params);
+addpath('utils'); 
+addpath('plots'); 
+
+load("results_noise.mat")
+params();
+plot_heatmap(results_struct, noise_powers, "pasad", "noise_power", params);
+plot_heatmap(results_struct, noise_powers, "cusum", "noise_power", params);
+
+plot_confusion_metrics(results_struct, noise_powers, 'pasad', 'noise_power');
+plot_confusion_metrics(results_struct, noise_powers, 'cusum', 'noise_power');

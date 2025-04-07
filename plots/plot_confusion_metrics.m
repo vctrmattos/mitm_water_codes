@@ -1,38 +1,37 @@
-function plot_confusion_metrics(results_struct, model_errors, detector_name)
-    % Plots TP, FP, FN, and TN for different models using a structured input.
+function plot_confusion_metrics(results_struct, param_values, detector_name, param_type)
+    % Plots TP and FN for different models or noise levels using a structured input.
     %
     % INPUT:
-    %   - results_struct: A struct where each field is a results set for a model.
-    %   - detector_name: Name of the detector ('pasad' or 'cusum').
+    %   - results_struct: Struct where each field is a results set for a param level.
+    %   - param_values: Vector of model_errors or noise_power.
+    %   - detector_name: 'pasad' or 'cusum'.
+    %   - param_type: 'model_error' or 'noise_power'.
 
-    epsilon = 10e-9;  % Small offset for threshold calculation
+    field_names = fieldnames(results_struct);
+    num_cases = length(field_names);
 
-    model_names = fieldnames(results_struct);
-    num_models = length(model_names);
+    % Initialize vectors
+    TP_all = zeros(1, num_cases);
+    FP_all = zeros(1, num_cases);
+    FN_all = zeros(1, num_cases);
+    TN_all = zeros(1, num_cases);
 
-    % Initialize metric vectors
-    TP_all = zeros(1, num_models);
-    FP_all = zeros(1, num_models);
-    FN_all = zeros(1, num_models);
-    TN_all = zeros(1, num_models);
+    for i = 1:num_cases
+        field = field_names{i};
+        results = results_struct.(field);
 
-    % Loop through each model in the struct
-    for i = 1:num_models
-        model = model_names{i};
-        results = results_struct.(model);
-
-        % Compute threshold based on the detector
+        % Compute optimal threshold for current results
         if strcmpi(detector_name, 'pasad')
-            threshold = calc_threshold(results, 'pasad', epsilon);
+            threshold = calc_threshold(results, 'pasad', 1e-9);
         elseif strcmpi(detector_name, 'cusum')
-            t_pos = calc_threshold(results, 'cusum_pos', epsilon);
-            t_neg = calc_threshold(results, 'cusum_neg', epsilon);
+            t_pos = calc_threshold(results, 'cusum_pos', 1e-9);
+            t_neg = calc_threshold(results, 'cusum_neg', 1e-9);
             threshold = [t_pos, t_neg];
         else
-            error('Detector "%s" not recognized.', detector_name);
+            error('Unknown detector: %s', detector_name);
         end
 
-        % Compute confusion matrix
+        % Compute metrics for this threshold
         confMatrix = compute_metrics(results, threshold, detector_name);
 
         TP_all(i) = confMatrix(1,1);
@@ -41,21 +40,31 @@ function plot_confusion_metrics(results_struct, model_errors, detector_name)
         TN_all(i) = confMatrix(2,2);
     end
 
-    % Plot metrics
+    %% Plot
     figure;
-    plot(TP_all/num_models * 100, '-o', 'LineWidth', 2); hold on;
-%     plot(FP_all, '-s', 'LineWidth', 2);
-    plot(FN_all/num_models * 100, '-^', 'LineWidth', 2);
-%     plot(TN_all, '-d', 'LineWidth', 2);
+
+    % Ajuste do eixo X e labels
+    if strcmp(param_type, 'noise_power')
+        xval = param_values;
+        xscale = 'log';
+        xlabel_text = 'Noise power (ppm²/Hz)';
+    else
+        xval = (param_values - 1) * 100;
+        xscale = 'linear';
+        xlabel_text = 'Multiplicative Model Error (%)';
+    end
+    
+    % Plot
+    hold on;
+    plot(xval, TP_all / length(results) * 100, '-o', 'LineWidth', 2);
+    plot(xval, FN_all / length(results) * 100, '-^', 'LineWidth', 2);
     hold off;
 
+    set(gca, 'XScale', xscale);
     grid on;
-    xlabel('Model Error (%)');
+    xlabel(xlabel_text);
     ylabel('Rate (%)');
     title(sprintf('Confusion Metrics - %s Detector', upper(detector_name)));
-%     legend('TP', 'FP', 'FN', 'TN', 'Location', 'best');
     legend('True Positive Rate', 'False Negative Rate', 'Location', 'best');
-    xticks(1:num_models);
-    xticklabels((model_errors - 1)*100);
-    xtickangle(45);  % Rotate labels if needed
+    xlim([min(xval), max(xval)]);
 end
