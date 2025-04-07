@@ -17,9 +17,9 @@ function plot_gamma_and_error_results_2d(results_struct, params, detector)
     for i = 1:num_files
         field = field_names{i};
         local_results = results_struct.(field); % Access results for current noise level
-        if detector = "pasad"
+        if detector == "pasad"
             max_detector = arrayfun(@(r) max(r.pasad), local_results); % Max PASAD for each gamma
-        else if detector = "cusum"
+        else if detector == "cusum"
         subplot(rows, cols, i);
         plot(gamma_values, max_detector, '-o');
         xlabel('\gamma values');
