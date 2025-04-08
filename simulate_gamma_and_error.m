@@ -1,9 +1,14 @@
 %% Main script for simulations with gamma and model error variation
 addpath('utils');
 addpath('plots');
+addpath('simulink');
+
+t_start = tic;
 
 % Load simulation parameters
 params = params();
+total_iterations = numel(params.model_error_values) * length(params.gamma_values);
+iteration_counter = 0;
 
 % External variation: model_error
 model_errors = params.model_error_values;
@@ -42,8 +47,14 @@ for j = 1:num_model_errors
 
     for i = 1:num_gamma
         params.gamma_ref_value = params.gamma_values(i);
-        fprintf('Simulation %d/%d | model_error = %.2f | gamma = %.2f\n', ...
-                i, num_gamma, (params.model_error - 1)*100, params.gamma_ref_value);
+        
+        iteration_counter = iteration_counter + 1;
+        if mod(iteration_counter, 10) == 0 || iteration_counter == 1
+            fprintf('Running simulation %d of %d (model_error = %.0f%%, gamma = %.2f)...\n', ...
+                iteration_counter, total_iterations, ...
+                (params.model_error - 1) * 100, params.gamma_ref_value);
+            fprintf('Elapsed time: %.2f seconds\n', toc(t_start));
+        end
 
         [time, sensor, y_m] = run_simulation(params);
         sensor_filtered = filter(ones(1, params.window_size_filter) / params.window_size_filter, 1, sensor);
@@ -65,10 +76,13 @@ end
 save('results_model_error.mat', 'results_struct', 'model_errors');
 
 %% Visualization
+addpath('utils');
+addpath('plots');
 params = params();
 load('results_model_error.mat');
-% plot_gamma_and_error_results_2d(results_struct, params);
-% plot_heatmap_model_error(results_struct, model_errors, "pasad");
-% plot_heatmap_model_error(results_struct, model_errors, "cusum");
-plot_confusion_metrics(results_struct, model_errors, "pasad");
-plot_confusion_metrics(results_struct, model_errors, "cusum");
+
+plot_heatmap(results_struct, model_errors, "pasad", "model_error", params);
+plot_heatmap(results_struct, model_errors, "cusum", "model_error", params);
+
+plot_confusion_metrics(results_struct, model_errors, 'pasad', 'model_error');
+plot_confusion_metrics(results_struct, model_errors, 'cusum', 'model_error');
