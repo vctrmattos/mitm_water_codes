@@ -1,15 +1,22 @@
-%% Main script for running simulations with attacks and detection
-addpath('utils'); 
-addpath('plots'); 
+%% Main script for simulations with gamma variation
+addpath('utils');
+addpath('plots');
+addpath('simulink');
+
+t_start = tic;
 
 % Load simulation parameters
 params = params();
-num_sim = length(params.gamma_values);
+num_gamma = length(params.gamma_values);
+total_iterations = num_gamma;
+
+% Fix model_error
+params.model_error = 1.1;
 
 % === Train PASAD using gamma_ref_value = 0 ===
 params.gamma_ref_value = 0;
 
-fprintf('Running training simulation with gamma_ref_value = 0...\n');
+fprintf('Training PASAD with gamma_ref_value = 0...\n');
 [~, sensor_train, ~] = run_simulation(params);
 
 % Apply moving average filter
@@ -19,8 +26,8 @@ sensor_train_filtered = filter(ones(1, params.window_size_filter) / params.windo
 [U, utc, nev] = train_pasad(sensor_train_filtered, params);
 fprintf('PASAD training completed.\n');
 
-% === Preallocate results struct ===
-results(num_sim) = struct(...
+% === Prepare results struct ===
+results(num_gamma) = struct( ...
     'gamma', [], ...
     'pasad', [], ...
     'sensor', [], ...
@@ -30,33 +37,34 @@ results(num_sim) = struct(...
     'sensor_unfiltered', [], ...
     'y_m', []);
 
-% === Run simulations ===
-for idx = 1:num_sim
-    params.gamma_ref_value = params.gamma_values(idx);
-    fprintf('Running simulation %d/%d, gamma_ref_value = %.2f\n', idx, num_sim, params.gamma_ref_value);
+for i = 1:num_gamma
+    params.gamma_ref_value = params.gamma_values(i);
 
-    % Run simulation
+    if mod(i, 5) == 0 || i == 1
+        fprintf('Running simulation %d of %d (gamma = %.2f)...\n', ...
+            i, total_iterations, params.gamma_ref_value);
+        fprintf('Elapsed time: %.2f seconds\n', toc(t_start));
+    end
+
     [time, sensor, y_m] = run_simulation(params);
-
-    % Apply filter
     sensor_filtered = filter(ones(1, params.window_size_filter) / params.window_size_filter, 1, sensor);
-
-    % Run PASAD detection using trained parameters
+    
+    % Run detection methods
     pasad_results = detect_pasad(sensor_filtered, params, U, utc, nev);
-
-    % Run CUSUM detection
     [cusum_pos, cusum_neg] = detect_cusum(sensor_filtered, params);
 
-    % Store results
-    results(idx).gamma = params.gamma_ref_value;
-    results(idx).pasad = pasad_results;
-    results(idx).sensor = sensor_filtered;
-    results(idx).sensor_unfiltered = sensor;
-    results(idx).time = time;
-    results(idx).cusum_pos = cusum_pos;
-    results(idx).cusum_neg = cusum_neg;
-    results(idx).y_m = y_m;
+    results(i).gamma = params.gamma_ref_value;
+    results(i).pasad = pasad_results;
+    results(i).sensor = sensor_filtered;
+    results(i).sensor_unfiltered = sensor;
+    results(i).time = time;
+    results(i).cusum_pos = cusum_pos;
+    results(i).cusum_neg = cusum_neg;
+    results(i).y_m = y_m;
 end
+
+% Optional: Save results
+save('results_gamma.mat', 'results_struct');
 
 %% Detection threshold optimization
 epsilon = 1e-9;
@@ -77,4 +85,3 @@ confusionchart(conf_matrix_cusum, {'Ataque', 'Sem Ataque'}, 'Title', 'Matriz de 
 plot_max_detector(results, 'pasad', optimal_thresholds.pasad, params);
 plot_max_detector(results, 'cusum_pos', optimal_thresholds.cusum_pos, params);
 plot_max_detector(results, 'cusum_neg', optimal_thresholds.cusum_neg, params);
-%         plot_gamma_and_error_results_2d(results, params);
