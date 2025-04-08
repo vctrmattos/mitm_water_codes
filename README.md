@@ -1,4 +1,4 @@
-# Cyber-Physical Attack Simulation Framework
+# Design and Detection of Covert Man-in-the-Middle Cyberattacks on Water Treatment Plants
 
 This repository supports the simulations and evaluations presented in our research paper on covert man-in-the-middle (MitM) attacks against industrial control systems, specifically targeting water treatment processes.
 
