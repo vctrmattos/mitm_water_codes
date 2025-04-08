@@ -73,7 +73,8 @@ for j = 1:num_model_errors
 end
 
 % Optional: Save results
-save('results_model_error.mat', 'results_struct', 'model_errors');
+save('results_model_error.mat', 'results_struct', 'model_errors', '-v7.3');
+fprintf('Total elapsed time: %.2f seconds\n', toc(t_start));
 
 %% Visualization
 addpath('utils');
@@ -81,16 +82,8 @@ addpath('plots');
 addpath('utils');
 addpath('plots');
 params = params();
+
 load('results_model_error.mat');
 
 plot_heatmap(results_struct, model_errors, "pasad", "model_error", params);
 plot_heatmap(results_struct, model_errors, "cusum", "model_error", params);
-
-plot_confusion_metrics(results_struct, model_errors, 'pasad', 'model_error');
-plot_confusion_metrics(results_struct, model_errors, 'cusum', 'model_error');
-
-plot_heatmap(results_struct, model_errors, "pasad", "model_error", params);
-plot_heatmap(results_struct, model_errors, "cusum", "model_error", params);
-
-plot_confusion_metrics(results_struct, model_errors, 'pasad', 'model_error');
-plot_confusion_metrics(results_struct, model_errors, 'cusum', 'model_error');

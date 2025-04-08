@@ -1,6 +1,12 @@
 function [U, utc, nev] = train_pasad(sensor, params)
 % trainPASAD Performs the training phase of the PASAD detector.
-%
+
+% Code adapted from https://github.com/mikeliturbe/pasad
+%Wissam Aoudi, Mikel Iturbe, and Magnus Almgren. 2018. Truth Will Out: 
+% Departure-Based Process-Level Detection of Stealthy Attacks on Control Systems. 
+% In Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security (CCS '18). ACM, New York, NY, USA, 817-831. 
+% DOI: https://doi.org/10.1145/3243734.3243781
+
 % Syntax:
 %   [U, utc, nev] = trainPASAD(sensor, params)
 %
