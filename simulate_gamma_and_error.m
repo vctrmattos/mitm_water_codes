@@ -78,8 +78,16 @@ save('results_model_error.mat', 'results_struct', 'model_errors');
 %% Visualization
 addpath('utils');
 addpath('plots');
+addpath('utils');
+addpath('plots');
 params = params();
 load('results_model_error.mat');
+
+plot_heatmap(results_struct, model_errors, "pasad", "model_error", params);
+plot_heatmap(results_struct, model_errors, "cusum", "model_error", params);
+
+plot_confusion_metrics(results_struct, model_errors, 'pasad', 'model_error');
+plot_confusion_metrics(results_struct, model_errors, 'cusum', 'model_error');
 
 plot_heatmap(results_struct, model_errors, "pasad", "model_error", params);
 plot_heatmap(results_struct, model_errors, "cusum", "model_error", params);

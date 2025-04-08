@@ -9,6 +9,7 @@ t_start = tic;
 params = params();
 num_gamma = length(params.gamma_values);
 noise_powers = params.noise_power_values;
+noise_powers = params.noise_power_values;
 num_noise = length(noise_powers);
 total_iterations = num_gamma * num_noise;
 iteration_counter = 0;
