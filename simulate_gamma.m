@@ -10,9 +10,6 @@ params = params();
 num_gamma = length(params.gamma_values);
 total_iterations = num_gamma;
 
-% Fix model_error
-params.model_error = 1.1;
-
 % === Train PASAD using gamma_ref_value = 0 ===
 params.gamma_ref_value = 0;
 
@@ -64,7 +61,7 @@ for i = 1:num_gamma
 end
 
 % Optional: Save results
-save('results_gamma.mat', 'results_struct');
+save('results_gamma.mat', 'results');
 
 %% Detection threshold optimization
 epsilon = 1e-9;
