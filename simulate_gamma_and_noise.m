@@ -9,7 +9,6 @@ t_start = tic;
 params = params();
 num_gamma = length(params.gamma_values);
 noise_powers = params.noise_power_values;
-noise_powers = params.noise_power_values;
 num_noise = length(noise_powers);
 total_iterations = num_gamma * num_noise;
 iteration_counter = 0;
@@ -71,12 +70,14 @@ for j = 1:num_noise
     results_struct.(noise_key) = local_results;
 end
 fprintf('Total elapsed time: %.2f seconds\n', toc(t_start));
+
 % Save results if needed
-save('results_noise.mat', 'results_struct', 'noise_powers');
+save('results_noise.mat', 'results_struct', 'noise_powers', '-v7.3');
 
 %% Visualization
 addpath('utils'); 
 addpath('plots'); 
+addpath('simulink');
 
 params = params();
 load("results_noise.mat")
