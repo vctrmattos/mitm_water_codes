@@ -29,7 +29,15 @@ Cyberattacks targeting critical infrastructure — such as water treatment facil
    Saved `.mat` files (e.g., `results_model_error.mat`) contain all raw results and can be reloaded for plotting and analysis.
 
 ---
+## Acknowledgments
 
+Code from functions `train_pasad` and `detect_pasad` adapted from https://github.com/mikeliturbe/pasad and described in the article:
+Wissam Aoudi, Mikel Iturbe, and Magnus Almgren. 2018. Truth Will Out: 
+Departure-Based Process-Level Detection of Stealthy Attacks on Control Systems. 
+In Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security (CCS '18). ACM, New York, NY, USA, 817-831. 
+DOI: https://doi.org/10.1145/3243734.3243781
+
+---
 ## 🛠 Requirements
 
 - MATLAB R2021a or later
