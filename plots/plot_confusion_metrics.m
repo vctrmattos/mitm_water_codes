@@ -43,7 +43,6 @@ function plot_confusion_metrics(results_struct, param_values, detector_name, par
     %% Plot
     figure;
 
-    % Ajuste do eixo X e labels
     if strcmp(param_type, 'noise_power')
         xval = param_values;
         xscale = 'log';
