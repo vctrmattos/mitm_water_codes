@@ -50,7 +50,7 @@ function params = params()
     params.window_size_filter = 10;
 
     % Gamma Values (Attack Magnitudes)
-    % params.gamma_values = -0.5:0.1:0.5;
+
     params.gamma_values = linspace(-0.5, 0.5, 11);
     
     params.noise_power_values = logspace(log10(1e-9) - 2, log10(1e-9) + 2, 101);

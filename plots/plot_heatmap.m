@@ -4,7 +4,6 @@ function plot_heatmap(results_struct, x_values, detector, x_label, params)
     field_names = fieldnames(results_struct);
     num_x = length(field_names);
 
-    % Assume gamma_values são consistentes em todos os campos
     sample = results_struct.(field_names{1});
     gamma_values = [sample.gamma];
     num_gamma = length(gamma_values);
@@ -20,7 +19,7 @@ function plot_heatmap(results_struct, x_values, detector, x_label, params)
                 case "pasad"
                     all_max_d(i, j) = max(local_results(j).pasad);
                 case "cusum"
-                    all_max_d(i, j) = abs(max(local_results(j).cusum_pos)) + abs(max(local_results(j).cusum_neg));
+                    all_max_d(i, j) = abs(max(local_results(j).cusum_pos)) + abs(min(local_results(j).cusum_neg));
                 otherwise
                     error("Unknown detector type: %s", detector);
             end
@@ -30,7 +29,6 @@ function plot_heatmap(results_struct, x_values, detector, x_label, params)
     %% === Heatmap ===
     figure;
     
-    % Ajuste opcional do eixo X (percentual se model_error, log10 se noise)
     if contains(lower(x_label), 'model')
         x_ticks = (x_values - 1) * 100;
         x_label_str = 'Multiplicative Model Error (%)';
