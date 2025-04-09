@@ -12,5 +12,5 @@ function [time, sensor, y_m] = run_simulation(params)
     time_filter = time > params.transient_time;
     time = time(time_filter) - params.transient_time;
     sensor = simOut.y_ma.data(time_filter);
-    y_m = simOut.y_ma.data(time_filter);
+    y_m = simOut.y_m.data(time_filter);
 end
