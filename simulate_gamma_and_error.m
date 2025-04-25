@@ -15,11 +15,11 @@ model_errors = params.model_error_values;
 num_model_errors = length(model_errors);
 num_gamma = length(params.gamma_values);
 
-% === Train PASAD using gamma_ref_value = 0 and model_error = 0 ===
+% === Train PASAD using gamma_ref_value = 0 and multiplicative model_error = 1 ===
 params.gamma_ref_value = 0;
-params.model_error = 0;
+params.model_error = 1;
 
-fprintf('Training PASAD with gamma_ref_value = 0 and model_error = 0...\n');
+fprintf('Training PASAD with gamma_ref_value = 0 and multiplicative model_error = 1...\n');
 [~, sensor_train, ~] = run_simulation(params);
 
 % Apply moving average filter
