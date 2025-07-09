@@ -15,7 +15,6 @@ function params = params()
     % Attacker's Model
     params.model_error = 0.9;
     params.plant_model_attacker = 0.93 * params.model_error / ((1.07 * params.model_error * s + 1) * (0.34 * params.model_error * s + 1)) * exp(-0.45 * s);
-    params.plant_model_no_delay_attacker = (0.62 / 0.64) * params.model_error / (s / 0.64 * params.model_error + 1);
 
     % Noise
     params.noise_power = 10^-9;
