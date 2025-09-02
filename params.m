@@ -13,7 +13,7 @@ function params = params()
     params.plant_model_no_delay = (0.62 / 0.64) / (s / 0.64 + 1);
 
     % Attacker's Model
-    params.model_error = 0.9;
+    params.model_error = 1.05;
     params.plant_model_attacker = 0.93 * params.model_error / ((1.07 * params.model_error * s + 1) * (0.34 * params.model_error * s + 1)) * exp(-0.45 * s);
 
     % Noise
@@ -50,10 +50,10 @@ function params = params()
 
     % Gamma Values (Attack Magnitudes)
 
-    params.gamma_values = linspace(-0.5, 0.5, 11);
+    params.gamma_values = linspace(-0.5, 0.5, 101);
     
-    params.noise_power_values = logspace(log10(1e-9) - 2, log10(1e-9) + 2, 11);
-    params.model_error_values = linspace(0.9, 1.1, 11);
+    params.noise_power_values = logspace(log10(1e-9) - 2, log10(1e-9) + 2, 101);
+    params.model_error_values = linspace(0.9, 1.1, 101);
 
     % Simulation Time
     params.sim_time = 610;

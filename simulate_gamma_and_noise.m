@@ -73,17 +73,17 @@ fprintf('Total elapsed time: %.2f seconds\n', toc(t_start));
 
 % Save results if needed
 save('results_noise.mat', 'results_struct', 'noise_powers', '-v7.3');
-
+   
 %% Visualization
 addpath('utils'); 
 addpath('plots'); 
 addpath('simulink');
 
 params = params();
-load("results_noise.mat")
+% load("results_noise.mat")
 
-plot_heatmap(results_struct, noise_powers, "pasad", "noise_power", params);
-plot_heatmap(results_struct, noise_powers, "cusum", "noise_power", params);
+% plot_heatmap(results_struct, noise_powers, "pasad", "noise_power", params);
+% plot_heatmap(results_struct, noise_powers, "cusum", "noise_power", params);
 
-plot_confusion_metrics(results_struct, noise_powers, 'pasad', 'noise_power');
-plot_confusion_metrics(results_struct, noise_powers, 'cusum', 'noise_power');
+plot_confusion_metrics(results_struct, noise_powers, 'pasad', 'noise_power', 1e-9);
+plot_confusion_metrics(results_struct, noise_powers, 'cusum', 'noise_power', 1e-9);

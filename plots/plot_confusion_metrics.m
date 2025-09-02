@@ -1,4 +1,4 @@
-function plot_confusion_metrics(results_struct, param_values, detector_name, param_type)
+function plot_confusion_metrics(results_struct, param_values, detector_name, param_type, epsilon)
     % Plots TP and FN for different models or noise levels using a structured input.
     %
     % INPUT:
@@ -22,10 +22,10 @@ function plot_confusion_metrics(results_struct, param_values, detector_name, par
 
         % Compute optimal threshold for current results
         if strcmpi(detector_name, 'pasad')
-            threshold = calc_threshold(results, 'pasad', 1e-9);
+            threshold = calc_threshold(results, 'pasad', epsilon);
         elseif strcmpi(detector_name, 'cusum')
-            t_pos = calc_threshold(results, 'cusum_pos', 1e-9);
-            t_neg = calc_threshold(results, 'cusum_neg', 1e-9);
+            t_pos = calc_threshold(results, 'cusum_pos', epsilon);
+            t_neg = calc_threshold(results, 'cusum_neg', epsilon);
             threshold = [t_pos, t_neg];
         else
             error('Unknown detector: %s', detector_name);
@@ -55,8 +55,8 @@ function plot_confusion_metrics(results_struct, param_values, detector_name, par
     
     % Plot
     hold on;
-    plot(xval, TP_all / length(results) * 100, '-o', 'LineWidth', 2);
-    plot(xval, FN_all / length(results) * 100, '-^', 'LineWidth', 2);
+    plot(xval, TP_all / (length(results)-1) * 100, '-', 'LineWidth', 2);
+    plot(xval, FN_all / (length(results) -1) * 100, '-', 'LineWidth', 2);
     hold off;
 
     set(gca, 'XScale', xscale);

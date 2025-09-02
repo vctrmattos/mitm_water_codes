@@ -31,7 +31,7 @@ function confMatrix = compute_metrics(results, threshold, detector_name)
     else if detector_name == 'cusum'
                 % Extract scores
         scores_pos = arrayfun(@(x) max(x.cusum_pos), results);
-        scores_neg = arrayfun(@(x) max(x.cusum_neg), results);
+        scores_neg = arrayfun(@(x) min(x.cusum_neg), results);
        
         % Labels (1 if attack, 0 otherwise)
         labels = arrayfun(@(x) x.gamma ~= 0, results);
@@ -41,7 +41,7 @@ function confMatrix = compute_metrics(results, threshold, detector_name)
 
         % Predicted labels based on threshold
         predicted_labels_pos = scores_pos >= threshold_pos;
-        predicted_labels_neg = scores_neg >= threshold_neg;
+        predicted_labels_neg = scores_neg <= threshold_neg;
     
         % Compute Confusion Matrix Components
         TP = sum((predicted_labels_pos == 1 | predicted_labels_neg == 1) & (labels == 1));

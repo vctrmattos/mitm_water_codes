@@ -79,6 +79,8 @@ confusionchart(conf_matrix_pasad, {'Ataque', 'Sem Ataque'}, 'Title', 'Matriz de 
 figure;
 confusionchart(conf_matrix_cusum, {'Ataque', 'Sem Ataque'}, 'Title', 'Matriz de Confusão - CUSUM');
 
+plot_gamma_results(results, optimal_thresholds, params, 3)
+
 plot_max_detector(results, 'pasad', optimal_thresholds.pasad, params);
 plot_max_detector(results, 'cusum_pos', optimal_thresholds.cusum_pos, params);
 plot_max_detector(results, 'cusum_neg', optimal_thresholds.cusum_neg, params);
